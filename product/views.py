@@ -7,3 +7,6 @@ def home(request):
 
 def product(request, product):
     return render(request, "product/product.html", {"Product":product})
+
+def PublishProduct(request):
+    return render(request, "product/retailer/publish_product.html")

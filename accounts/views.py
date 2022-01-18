@@ -5,9 +5,35 @@ from django.contrib import messages
 from django.contrib.auth import login as auth_login
 from django.contrib.auth.models import User
 from .models import Profile
+from django.contrib.auth import authenticate
+from django.contrib.auth.decorators import login_required
 # Create your views here.
+
+
 def login(request):
-    return HttpResponse("Hello World login")
+    if request.user.is_authenticated:
+         return redirect("/")
+
+    if request.method == "POST":
+        form_username = request.POST['username']
+        form_password = request.POST['password']
+        next = request.POST['next']
+
+        user = authenticate(request, username=form_username,
+                             password=form_password)
+
+        if user is not None:
+            auth_login(request, user)
+
+            if next:
+                return redirect(next)
+
+            return redirect("/")
+        else:
+            messages.error(request, "Invalid Credentials")
+            return render(request, "accounts/login.html")
+
+    return render(request, "accounts/login.html")
 
 def register(request):
     if request.method == "POST":
@@ -25,13 +51,44 @@ def register(request):
 
         profile=Profile.objects.create(user=user, phone=number)
         profile.save()
-        
+
 
         auth_login(request, user, backend='django.contrib.auth.backends.ModelBackend')
-        
+
         messages.success(request, "You Have successfully registered in our website")
         return redirect("/accounts/home")
     return render(request, "accounts/register.html")
 
+
+@login_required(login_url="/accounts/login")
 def temphome(request):
     return render(request, "accounts/home.html")
+
+
+@login_required(login_url="/accounts/login")
+def becomeRetailer(request):
+    
+    profile = Profile.objects.get(user=request.user)
+
+    if profile.is_Retailer == True:
+        return redirect(retailerWelcome)
+
+    if request.method == "POST":
+        address = request.POST['address']
+        
+        profile.is_Retailer = True
+        profile.Address = address
+        profile.save()
+
+        return redirect(retailerWelcome)
+
+    return render(request, "accounts/retailer.html", {"address":profile.Address})
+
+@login_required(login_url="/accounts/login")
+def retailerWelcome(request):
+    user = request.user
+    profile = Profile.objects.get(user=user)
+    if profile.is_Retailer:
+        return render(request, "accounts/retailerDash.html")
+    else:
+        return redirect(becomeRetailer)

@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1 align="center">Welcome back, {{request.user.username}}</h1>
+    <h2 align="center">Do you want to be a retialer at MyWay {{address}}</h2>
+    <form action="{% url 'becomeRetailer' %}" method="post">
+        {% csrf_token %}
+       Address: <textarea rows="10" cols="50" type="text" name="address">{{address}}</textarea>
+       <input type="submit" value="Submit">
+    </form>
+</body>
+</html>
