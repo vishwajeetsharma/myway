@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+
+        <div align="center" style="font-size:45px;">
+            {% for i in messages %}
+                {{i}} <br>
+            {% endfor %} <br>
+            <form method="post" action="{% url 'UserProfile' %}" enctype="multipart/form-data">
+                {% csrf_token %}
+                username: <input type="text" name="username" value="{{request.user.username}}"> <br>
+                first_name: <input type="text" name="first_name" value="{{request.user.first_name}}"> &nbsp;
+                last_name: <input type="text" name="last_name" id="" value="{{request.user.last_name}}"><br>
+                email : <input type="email" name="email" value="{{request.user.email}}"><br>
+                phone : <input type="number" name="phone" id="" value="{{profile.phone}}"><br>
+                address: <textarea name="address" id="" cols="30" rows="10">{{profile.Address}}</textarea><br>
+                profile photo: <img src="/media/{{profile.DP}}" height="150px" alt="{{request.user.username}}'s profile pic"><input type="file" accept="image/*" name="image"> <br>
+                        
+                retailer: {{profile.is_Retailer}} <br>
+
+                <input type="submit" style="padding: 5px 20px;" value="Save">
+            </form>
+        </div>
+        <script>
+            if ( window.history.replaceState ) {
+                window.history.replaceState( null, null, window.location.href );
+            }
+        </script>
+        
+</body>
+</html>

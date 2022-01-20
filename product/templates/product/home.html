@@ -1,4 +1,39 @@
 {% extends 'product/base.html' %}
 {% block body %}
-    Hello Home {{request.user.username}}
+    Hello Home {{request.user.username}} <img src="/media/{{profile_photo}}" height="50px" width="50px" style="border-radius: 50%;" alt=""> <br>
+    <a href="/publish-a-new-product/">publish-a-new-product/</a><br>
+    <a href="{% url 'login' %}">login/</a><br>
+    <a href="{% url 'logoutPath' %}">logout/</a><br>
+    <a href="/accounts/register/">register/</a><br>
+    <a href="/accounts/home/">home/</a><br>
+    <a href="/accounts/become-a-retailer/">become-a-retailer/</a><br>
+    <a href="/accounts/welcome-retailer">welcome-retailer</a><br>
+    <a href="/accounts/profile/">profile/</a>
+
+
+
+    <div class="products">
+        {% for product in products %}
+            <div class="product">
+                <ul>
+                    <li><img src="/media/{{product.image}}" alt="{{product.name}}'s image" width="250px"></li>
+                    <li>{{product.user}} &nbsp;++user</li>
+                    <li>{{product.name}} &nbsp;++name</li>
+                    <li>{{product.description}} &nbsp;++description</li>
+                    <li>{{product.category.category}} &nbsp;++category</li>
+                    <li>{{product.discount}} &nbsp;++discount</li>
+                    <li>{{product.after_discount_pirce}} &nbsp;++price</li>
+                    <li>{{product.date_created}} &nbsp;++date</li>
+                    <li>
+                        <ul>
+                            {% for code in product.promo_codes.all %}
+                                <li>{{code.code}}</li>
+                            {% endfor %}
+                        </ul>
+                    </li>
+                </ul>
+            </div> <br><br>
+        {% endfor %}
+    </div>
+
 {% endblock body %}

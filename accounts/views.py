@@ -2,7 +2,7 @@ from django.db.models.fields import PositiveBigIntegerField
 from django.http.response import HttpResponse
 from django.shortcuts import redirect, render
 from django.contrib import messages
-from django.contrib.auth import login as auth_login
+from django.contrib.auth import login as auth_login, logout
 from django.contrib.auth.models import User
 from .models import Profile
 from django.contrib.auth import authenticate
@@ -32,10 +32,11 @@ def login(request):
         else:
             messages.error(request, "Invalid Credentials")
             return render(request, "accounts/login.html")
-
     return render(request, "accounts/login.html")
 
 def register(request):
+    if request.user.is_authenticated:
+         return redirect("/")
     if request.method == "POST":
         username = request.POST['username']
         email = request.POST['email']
@@ -57,6 +58,8 @@ def register(request):
 
         messages.success(request, "You Have successfully registered in our website")
         return redirect("/accounts/home")
+
+    messages.success(request, "You are successfully logged out Login Again")
     return render(request, "accounts/register.html")
 
 
@@ -92,3 +95,49 @@ def retailerWelcome(request):
         return render(request, "accounts/retailerDash.html")
     else:
         return redirect(becomeRetailer)
+
+@login_required(login_url="/accounts/login")
+def UserProfile(request):
+    user = request.user
+    profile = Profile.objects.get(user=user)
+
+    if request.method == "POST":
+        username = request.POST['username']
+        first_name = request.POST['first_name']
+        last_name = request.POST['last_name']
+        email = request.POST['email']
+        phone = request.POST['phone']
+        address = request.POST['address']
+
+        
+
+        # user = User.objects.get(username = request.user.username)
+        user = request.user
+
+        profile = Profile.objects.get(user=user)
+
+        user.username = username
+        user.first_name = first_name
+        user.last_name = last_name
+        user.email = email
+
+        if request.FILES != 0:
+            image = request.FILES['image']
+            profile.DP = image
+
+        profile.Address = address
+        profile.phone = phone
+
+        user.save()
+        profile.save()
+
+        messages.success(request, "Your data has been updated successfully")
+        return render(request, "accounts/profile.html", {"profile":profile})
+
+
+    return render(request, "accounts/profile.html", {"profile":profile})
+
+def logoutPath(request):
+    messages.success(request, "You are successfully logged out Login Again")
+    logout(request)
+    return redirect(login)

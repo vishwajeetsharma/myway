@@ -1,3 +1,5 @@
+from distutils.command.upload import upload
+from pyexpat import model
 from django.db import models
 from django.contrib.auth.models import User
 # Create your models here.
@@ -21,13 +23,15 @@ class Promo_code(models.Model):
 
 class Product(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    image = models.ImageField(upload_to="product_images/")
     name = models.CharField(max_length=200)
     description = models.TextField()
-    category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    category = models.ForeignKey(Category, null=True, blank=True, on_delete=models.CASCADE)
     discount = models.IntegerField(default=0)
     after_discount_pirce = models.IntegerField()
     date_created = models.DateTimeField(auto_now_add=True)
-    promo_codes = models.ManyToManyField(Promo_code)
+    availablity = models.BooleanField(default=True)
+    promo_codes = models.ManyToManyField(Promo_code, blank=True)
 
     def __str__(self):
         return self.name
